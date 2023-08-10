@@ -33,7 +33,7 @@ export const getPosts = async (req, res) => {
 
     const { page } = req.query;
     const skip = (page - 1) * 10;
-    const result = await Post.find().populate({ path: "user", select: "-password" }).populate({ path: "user", select: "-password" }).populate({ path: "comments.user", select: "-password" }).skip(skip).limit(10);
+    const result = await Post.find().populate({ path: "user", select: "-password" }).populate({ path: "user", select: "-password" }).populate({ path: "comments.user", select: "-password" }).populate({ path: "likes.user", select: "-password" }).skip(skip).limit(10);
     res.send(result);
   } catch (error) {
     res.status(500).json(error);
@@ -48,7 +48,7 @@ export const likePost = async (req, res) => {
   try {
     const { postId } = req.params;
     const { user } = req;
-    const post = await Post.findById(postId).populate({ path: "user", select: "-password" }).populate({ path: "comments.user", select: "-password" });
+    const post = await Post.findById(postId).populate({ path: "user", select: "-password" }).populate({ path: "comments.user", select: "-password" }).populate({ path: "likes.user", select: "-password" });
 
     if (!post) return res.status(200).json({ message: "post not found" });
 
@@ -57,7 +57,7 @@ export const likePost = async (req, res) => {
     let userIndex = -1;
 
     post.likes.forEach((like, index) => {
-      if (like.user.toJSON() === user) {
+      if (like.user._id.toJSON() === user) {
         isLiked = true;
         userIndex = index;
         return;
@@ -79,13 +79,27 @@ export const likePost = async (req, res) => {
 
 }
 
+export const getLikes = async (req, res) => {
+
+  const { id } = req.params;
+
+  try {
+    const result = await Post.findById(id).populate({ path: "likes.user", select: "-password" })
+    res.status(200).json(result.likes);
+
+  } catch (error) {
+    res.status(500).json(error.message);
+    console.log(error)
+  }
+
+}
+
 export const commentPost = async (req, res) => {
 
   try {
     const { id } = req.params;
     const { user } = req;
     const { comment } = req.body;
-    console.log(id);
 
     const updatedPost = await Post.findByIdAndUpdate(id, { $push: { comments: { user, comment } } }, { new: true }).populate({ path: "user", select: "-password" }).populate({ path: "comments.user", select: "-password" });
 
