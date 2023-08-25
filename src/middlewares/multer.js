@@ -10,13 +10,19 @@ export const multerUpload = multer({
   storage: multer.diskStorage({
     destination: join(CURRENT_DIR, '../public/uploads'),
     filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`)
+      const fileExtension = extname(file.originalname);
+      const fileName = file.originalname.split(fileExtension)[0];
+      cb(null, `${fileName}-${Date.now()}${fileExtension}`);
     }
   }),
   fileFilter: (req, file, cb) => {
-    const mime = extname(file.originalname);
-    if (!imageMimeTypes.includes(mime)) cb(null, true)
-    else cb(new Error(`Only ${join(imageMimeTypes)} allowed, ${extname(file.originalname)} instead`), false);
+    if (imageMimeTypes.includes(file.mimetype)) {
+      cb(null, true)
+    }
+    else {
+      req.error = `Only ${imageMimeTypes.join(' ')} allowed`
+      cb(null, false);
+    }
   },
   limits: {
     fieldSize: 10000000

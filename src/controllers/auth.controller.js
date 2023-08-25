@@ -17,7 +17,7 @@ export const signup = async (req, res) => {
 
     const token = await createAcessToken({ id: newUser._id });
 
-    res.cookie('accessToken', token);
+    res.cookie('accessToken', token)
     res.status(200).json(newUser)
 
   } catch (error) {
@@ -25,6 +25,31 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const update = async (req, res) => {
+
+  try {
+
+    if (req.error) {
+      return res.status(500).json({ message: req.error })
+    }
+
+    const { user } = req;
+
+    const userFound = await User.findByIdAndUpdate(user, req.body, { new: true }).select("-password");
+
+
+    if (!userFound) return res.status(400).json({ message: "user not found" })
+
+    return res.status(200).json(userFound);
+
+  } catch (error) {
+    return res.status(500).json({ message: error })
+  }
+
+
+}
+
 
 export const login = async (req, res) => {
 

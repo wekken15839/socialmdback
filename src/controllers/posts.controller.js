@@ -27,6 +27,13 @@ export const post = async (req, res) => {
 
 }
 
+function randomizeArray(array) {
+  return array.slice().sort(function () {
+    return 0.5 - Math.random();
+  });
+}
+
+
 export const getPosts = async (req, res) => {
 
   try {
@@ -34,16 +41,31 @@ export const getPosts = async (req, res) => {
     const { page } = req.query;
     const skip = (page - 1) * 10;
     const result = await Post.find().populate({ path: "user", select: "-password" }).populate({ path: "user", select: "-password" }).populate({ path: "comments.user", select: "-password" }).populate({ path: "likes.user", select: "-password" }).skip(skip).limit(10);
-    res.send(result);
+
+    res.send(randomizeArray(result));
   } catch (error) {
     res.status(500).json(error);
   }
 
 }
 
+export const getMyPosts = async (req, res) => {
+
+  const { user } = req;
+
+  try {
+    const result = await Post.find({ user }).populate({ path: "user", select: "-password" }).populate({ path: "comments.user", select: "-password" }).sort({ createdAt: -1 });
+
+    return res.status(200).json(result);
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error.message);
+  }
+
+}
+
 export const likePost = async (req, res) => {
-
-
 
   try {
     const { postId } = req.params;
@@ -78,6 +100,7 @@ export const likePost = async (req, res) => {
   }
 
 }
+
 
 export const getLikes = async (req, res) => {
 
