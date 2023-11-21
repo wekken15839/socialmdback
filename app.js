@@ -8,9 +8,9 @@ const app = express();
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/public", express.static('./src/public/uploads'));
+app.use("/hola", (req, res) => res.send({ message: "hola" }));
+app.use("/api/public", express.static("./src/public/uploads"));
 app.use("/api", authRouter);
 app.use("/api", postRouter);
-
 
 export default app;

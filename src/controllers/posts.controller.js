@@ -40,7 +40,8 @@ export const getPosts = async (req, res) => {
 
     const { page } = req.query;
     const skip = (page - 1) * 10;
-    const result = await Post.find().populate({ path: "user", select: "-password" }).populate({ path: "user", select: "-password" }).populate({ path: "comments.user", select: "-password" }).populate({ path: "likes.user", select: "-password" }).skip(skip).limit(10);
+    const result = await Post.find().populate({ path: "user", select: "-password" }).populate({ path: "user", select: "-password" }).populate({ path: "comments.user", select: "-password" }).populate({ path: "likes.user", select: "-password" }).skip(skip);
+    console.log(result);
 
     res.send(randomizeArray(result));
   } catch (error) {

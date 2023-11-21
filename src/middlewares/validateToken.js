@@ -3,9 +3,11 @@ import { accessTokenSecretKey } from "../../config.js";
 
 export const validateToken = async (req, res, next) => {
 
-  const { accessToken } = req.cookies;
 
   try {
+    const { accessToken } = req.cookies;
+    console.log(accessToken);
+    console.log(req.cookies);
 
     if (!accessToken) return res.status(401).json({ message: "no token, unauthorized" });
 
