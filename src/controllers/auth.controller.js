@@ -36,10 +36,8 @@ export const signup = async (req, res) => {
     const token = await createAcessToken({ id: newUser._id });
 
     res.cookie("accessToken", token);
-    console.log("registrado");
     res.status(200).json(newUser);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -88,7 +86,6 @@ export const login = async (req, res) => {
     res.cookie("accessToken", token);
     res.status(200).json(userFound);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -111,6 +108,5 @@ export const profile = async (req, res) => {
     res.status(200).json(userFound);
   } catch (error) {
     res.status(500).json({ message: error.message });
-    console.log(error);
   }
 };
